@@ -29,6 +29,6 @@ My main issue this week was starting up a previous project where my API was goin
 If I had more time it would be to implement the different endpoints to the frontend project.    
 
 ## View it live
-
+UPDATE: The below Heroku link can not be accessed at this moment. Using original endpoint instead. 
 Deployed Heroku link: https://blooming-brushlands-33610.herokuapp.com/
 Linked API to happy thought project: https://polite-gumption-c6b3c8.netlify.app/
