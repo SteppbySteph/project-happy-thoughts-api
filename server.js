@@ -2,7 +2,11 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 
-const mongoUrl = process.env.MONGO_URL || "mongodb://localhost/happy-thoughts";
+/*mongodb://localhost/happy-thoughts*/
+
+/*`mongodb+srv:${MONGODB_URI}//@cluster0.ymhoq.mongodb.net/happyThoughtsAPI`*/
+
+const mongoUrl = process.env.MONGO_URL || "mongodb+srv://Plexy:NayaMaria2021@cluster0.ymhoq.mongodb.net/happyThoughtsAPI";
 mongoose.connect(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = Promise;
 
@@ -20,11 +24,11 @@ const ThoughtSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: ()=> new Date()
+    default: () => new Date()
   },
 });
 // Below is a model called Thought which uses the schema above.
-const Thought = mongoose.model('Thought', ThoughtSchema); 
+const Thought = mongoose.model('Thought', ThoughtSchema);
 
 
 const port = process.env.PORT || 8080;
@@ -36,26 +40,32 @@ app.use(express.json());
 
 // Start defining your routes here
 app.get("/", (req, res) => {
-  res.send("Hello! This is the backend-part of a previous project called Happy Thoughts.");
+  res.send("Hello! This is the backend-part of a previous project called Happy Thoughts!");
 });
 
-app.get('/thoughts', async (req, res) => { 
-//V1 Mongoose   
+app.get('/thoughts', async (req, res) => {
+  //V1 Mongoose   
   const { page } = req.query;
   try {
     const thoughts = await Thought.find({})
-    .sort({createdAt: -1})
-    .skip((page -1) * 20).limit(20);
-    res.status(200).json({success: true, response: thoughts});
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * 20).limit(20);
+    res.status(200).json({ success: true, response: thoughts });
   } catch (error) {
-    res.status(400).json({success: false, response: error});
+    res.status(400).json({ success: false, response: error });
   }
 });
 
+app.get('/testing1', async (req, res) => {
+  //V1 Mongoose  
+  res.send("bla bla")
+});
+
+
 app.get('/thoughts/:thoughtId', async (req, res) => {
   try {
-    const fetchId = await Thought.findOne({_id: req.params.thoughtId});
-    if(fetchId) {
+    const fetchId = await Thought.findOne({ _id: req.params.thoughtId });
+    if (fetchId) {
       res.status(200).json({
         data: fetchId,
         success: true,
@@ -101,12 +111,12 @@ app.post('/thoughts', async (req, res) => {
   const { message } = req.body;
 
   try {
-    const newThought = await new Thought({ message: message}).save()
+    const newThought = await new Thought({ message: message }).save()
     res.status(201).json({
       response: newThought,
       success: true
     });
-  } catch (error) { 
+  } catch (error) {
     res.status(400).json({
       response: 'Could not save message',
       success: false
@@ -118,46 +128,48 @@ app.post('/thoughts/:thoughtId/like', async (req, res) => {
   const { thoughtId } = req.params;
 
   try {
-    const updatedLikes = await Thought.findByIdAndUpdate(thoughtId, {$inc: {hearts: 1}});
+    const updatedLikes = await Thought.findByIdAndUpdate(thoughtId, { $inc: { hearts: 1 } });
     res.status(200).json({
       response: updatedLikes,
-      success: true}); 
+      success: true
+    });
   } catch (error) {
     res.status(400).json({
       response: error,
-      success: false});
+      success: false
+    });
   }
 });
 
 app.delete("/thoughts/:id", async (req, res) => {
   const { id } = req.params;
-  
+
   try {
-    const deleted = await Thought.findOneAndDelete({_id: id});
+    const deleted = await Thought.findOneAndDelete({ _id: id });
     if (deleted) {
-      res.status(200).json({success:true, response: deleted});
+      res.status(200).json({ success: true, response: deleted });
     } else {
-      res.status(404).json({success: false, response: "Not Found"});
+      res.status(404).json({ success: false, response: "Not Found" });
     }
   } catch (error) {
-    res.status(400).json({success: false, response: error});
+    res.status(400).json({ success: false, response: error });
   }
 });
 
 app.patch("/thoughts/:id", async (req, res) => {
   const { id } = req.params;
-  const { updatedThought} = req.body;
+  const { updatedThought } = req.body;
 
   try {
-    const updatedMessage = await Thought.findByIdAndUpdate({_id: id}, {message: updatedThought})
+    const updatedMessage = await Thought.findByIdAndUpdate({ _id: id }, { message: updatedThought })
     if (updatedMessage) {
       res.status(200).json({
-        success: true, 
+        success: true,
         response: updatedMessage
       });
     } else {
       res.status(404).json({
-        success: false, 
+        success: false,
         response: "Not found"
       });
     }
